@@ -15,6 +15,19 @@ class BrokenConfigurationTest < Minitest::Test
 end
 
 class ConfigurationTest < MiniTest::Test
+  def test_default_booleans
+    Jammit.load_configuration('test/config/assets-default.yml')
+    # Default false
+    assert !Jammit.embed_assets
+    assert !Jammit.mhtml_enabled
+    # Default true
+    assert Jammit.compress_assets
+    assert Jammit.rewrite_relative_paths
+    assert Jammit.gzip_assets
+    assert Jammit.allow_debugging
+  end
+
+
   def test_disabled_compression
     Jammit.load_configuration('test/config/assets-compression-disabled.yml')
     assert !Jammit.compress_assets
@@ -64,13 +77,13 @@ class ConfigurationTest < MiniTest::Test
   end
 
   def test_environment_specific_configuration
-    ENV['RAILS_ENV'] = 'development'
+    Rails.env = 'development'
     Jammit.load_configuration('test/config/assets-environment.yml')
 
     assert !Jammit.compress_assets # Should override with environment specific configuration
     assert Jammit.gzip_assets # but keep the general configuration
 
-    ENV['RAILS_ENV'] = 'test'
+    Rails.env = 'test'
   end
 
   def test_no_rewrite_relative_paths

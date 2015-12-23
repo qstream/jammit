@@ -32,6 +32,7 @@ class JammitHelpersTest < ActionView::TestCase
   end
 
   def setup
+    Rails.env = "pretend_this_isnt_test"
     Jammit.load_configuration('test/config/assets.yml').reload!
   end
 
@@ -54,10 +55,6 @@ class JammitHelpersTest < ActionView::TestCase
 
   def test_include_templates
     assert_equal '<script src="/assets/jst_test.js"></script>', include_javascripts(:jst_test)
-  end
-
-  def test_include_templates_with_diff_ext
-    assert_equal '<script src="/assets/jst_test_diff_ext.js"></script>', include_javascripts(:jst_test_diff_ext)
   end
 
   def test_individual_assets_in_development

@@ -4,13 +4,13 @@ $LOAD_PATH.push File.expand_path(File.dirname(__FILE__))
 # to all of the configuration options.
 module Jammit
 
-  VERSION                       = "0.6.6"
+  VERSION                       = "0.7.1"
 
   ROOT                          = File.expand_path(File.dirname(__FILE__) + '/..')
 
   ASSET_ROOT                    = File.expand_path((defined?(Rails) && Rails.root.to_s.length > 0) ? Rails.root : ENV['RAILS_ROOT'] || ".") unless defined?(ASSET_ROOT)
 
-  DEFAULT_PUBLIC_ROOT           = (defined?(Rails) && Rails.public_path.to_s.length > 0) ? Rails.public_path : File.join(ASSET_ROOT, 'public') unless defined?(PUBLIC_ROOT)
+  DEFAULT_PUBLIC_ROOT           = (defined?(Rails) && Rails.public_path.to_s.length > 0) ? Rails.public_path.to_s : File.join(ASSET_ROOT, 'public') unless defined?(PUBLIC_ROOT)
 
   DEFAULT_CONFIG_PATH           = File.join(ASSET_ROOT, 'config', 'assets.yml')
 
@@ -83,13 +83,19 @@ module Jammit
 
     @config_path            = config_path
     @configuration          = symbolize_keys(conf)
+
     @package_path           = conf[:package_path] || DEFAULT_PACKAGE_PATH
+
+    # These default false
     @embed_assets           = conf[:embed_assets] || conf[:embed_images]
+    @mhtml_enabled          = @embed_assets && @embed_assets != "datauri"
+
+    # These default true, as `!(nil == false) # => true`
     @compress_assets        = !(conf[:compress_assets] == false)
     @rewrite_relative_paths = !(conf[:rewrite_relative_paths] == false)
     @gzip_assets            = !(conf[:gzip_assets] == false)
     @allow_debugging        = !(conf[:allow_debugging] == false)
-    @mhtml_enabled          = @embed_assets && @embed_assets != "datauri"
+
     @compressor_options     = symbolize_keys(conf[:compressor_options] || {})
     @css_compressor_options = symbolize_keys(conf[:css_compressor_options] || {})
     set_javascript_compressor(conf[:javascript_compressor])
